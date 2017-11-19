@@ -20,103 +20,103 @@ var cors = require("cors");
 // Set the origin to the domain of your web application
 var corsOptions =
 {
-	origin: 'http://www.example.com'
+    origin: 'http://www.example.com'
 };
 
 var ics2json_function = function (req, res)
 {
-	const ical = require("ical");
-	const icsUrl = req.query["ics"] || "";
-	const filter = req.query["filter"] || "";
-	const count = req.query["count"] || 100;
-	const now = (new Date()).getTime();
+    const ical = require("ical");
+    const icsUrl = req.query["ics"] || "";
+    const filter = req.query["filter"] || "";
+    const count = req.query["count"] || 100;
+    const now = (new Date()).getTime();
 
-	res.setHeader('content-type','application/json');
+    res.setHeader('content-type','application/json');
 
-	// returns a sorted array of VEVENTS with startdate property in ms
-	function sortEventsByDate(dataObj)
-	{
-		var arr = [];
-		for (var k in dataObj)
-		{
-			if (dataObj.hasOwnProperty(k) &&
-				dataObj[k].hasOwnProperty("type") &&
-				dataObj[k]["type"] === "VEVENT")
-			{
-				arr.push({
-					"key":k,
-					"data":dataObj[k],
-					"startdate":(new Date(dataObj[k]["start"])).getTime()
-				});
-			}
-		}
-		arr.sort(function(a,b) {
-			if (a.startdate < b.startdate)
-		      return -1;
-		    if (a.startdate > b.startdate)
-		      return 1;
-		    return 0;
-		});
-		return arr;
-	}
+    // returns a sorted array of VEVENTS with startdate property in ms
+    function sortEventsByDate(dataObj)
+    {
+    var arr = [];
+    for (var k in dataObj)
+    {
+    if (dataObj.hasOwnProperty(k) &&
+    dataObj[k].hasOwnProperty("type") &&
+    dataObj[k]["type"] === "VEVENT")
+    {
+    arr.push({
+    "key":k,
+    "data":dataObj[k],
+    "startdate":(new Date(dataObj[k]["start"])).getTime()
+    });
+    }
+    }
+    arr.sort(function(a,b) {
+    if (a.startdate < b.startdate)
+          return -1;
+        if (a.startdate > b.startdate)
+          return 1;
+        return 0;
+    });
+    return arr;
+    }
 
-	if (!icsUrl)
-	{
-		var usageObj = {
-			"name":"ics2json",
-			"GET parameters":
-			{
-				"ics":"url to query",
-				"filter":"'future', 'past'",
-				"count":"number to return. default is 100."
-			}
-		};
+    if (!icsUrl)
+    {
+    var usageObj = {
+    "name":"ics2json",
+    "GET parameters":
+    {
+    "ics":"url to query",
+    "filter":"'future', 'past'",
+    "count":"number to return. default is 100."
+    }
+    };
 
-		res.status(200).send(JSON.stringify({"usage":usageObj}));
-	}
-	else
-	{
-		ical.fromURL(icsUrl, {}, function(err, data)
-		{
-			if (err)
-			{
-				res.status(500).send(JSON.stringify({"error":err}));
-			}
-			else
-			{
-				var ret = {};
-				var eventsArr = sortEventsByDate(data);
-				var numEvents = eventsArr.length;
-				var filteredEventsArr = [];
+    res.status(200).send(JSON.stringify({"usage":usageObj}));
+    }
+    else
+    {
+    ical.fromURL(icsUrl, {}, function(err, data)
+    {
+    if (err)
+    {
+    res.status(500).send(JSON.stringify({"error":err}));
+    }
+    else
+    {
+    var ret = {};
+    var eventsArr = sortEventsByDate(data);
+    var numEvents = eventsArr.length;
+    var filteredEventsArr = [];
 
-				switch(filter)
-				{
-					case "future":
-						filteredEventsArr = eventsArr
-							.filter((a) => a.startdate > now)
-							.slice(0,count);
-						break;
-					case "past":
-						filteredEventsArr = eventsArr.filter((a) => a.startdate < now);
-						filteredEventsArr = filteredEventsArr.slice(filteredEventsArr.length - count, filteredEventsArr.length);
-						break;
-					default:
-						filteredEventsArr = eventsArr.slice(0,count);
-				}
+    switch(filter)
+    {
+    case "future":
+    filteredEventsArr = eventsArr
+    .filter((a) => a.startdate > now)
+    .slice(0,count);
+    break;
+    case "past":
+    filteredEventsArr = eventsArr.filter((a) => a.startdate < now);
+    filteredEventsArr = filteredEventsArr.slice(filteredEventsArr.length - count, filteredEventsArr.length);
+    break;
+    default:
+    filteredEventsArr = eventsArr.slice(0,count);
+    }
 
-				ret["data"] = filteredEventsArr;
+    ret["data"] = filteredEventsArr;
 
-				res.status(200).send(JSON.stringify(ret));
-			}
-		});
-	}
+    res.status(200).send(JSON.stringify(ret));
+    }
+    });
+    }
 };
 
 exports.ics2json = function ics2json(req, res)
 {
-	var corsFn = cors(corsOptions);
-	corsFn(req, res, function()
-	{
-		ics2json_function(req, res);
-	});
+    var corsFn = cors(corsOptions);
+    corsFn(req, res, function()
+    {
+    ics2json_function(req, res);
+    });
 }
