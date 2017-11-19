@@ -31,6 +31,8 @@ var ics2json_function = function (req, res)
 	const count = req.query["count"] || 100;
 	const now = (new Date()).getTime();
 
+	res.setHeader('content-type','application/json');
+
 	// returns a sorted array of VEVENTS with startdate property in ms
 	function sortEventsByDate(dataObj)
 	{
