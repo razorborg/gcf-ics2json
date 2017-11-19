@@ -16,21 +16,12 @@
 'use strict';
 
 var cors = require("cors");
-var whitelist = ['http://example2.com', 'http://example.com'];
+
+// Set the origin to the domain of your web application
 var corsOptions =
 {
-	origin: function (origin, callback)
-	{
-		if (whitelist.indexOf(origin) !== -1)
-		{
-			callback(null, true)
-		}
-		else
-		{
-			callback(new Error('Not allowed by CORS'))
-		}
-	}
-}
+	origin: 'http://www.example.com'
+};
 
 var ics2json_function = function (req, res)
 {
