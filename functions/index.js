@@ -15,7 +15,24 @@
 
 'use strict';
 
-exports.ics2json = function ics2json(req, res)
+var cors = require("cors");
+var whitelist = ['http://example2.com', 'http://example.com'];
+var corsOptions =
+{
+	origin: function (origin, callback)
+	{
+		if (whitelist.indexOf(origin) !== -1)
+		{
+			callback(null, true)
+		}
+		else
+		{
+			callback(new Error('Not allowed by CORS'))
+		}
+	}
+}
+
+var ics2json_function = function (req, res)
 {
 	const ical = require("ical");
 	const icsUrl = req.query["ics"] || "";
@@ -101,3 +118,12 @@ exports.ics2json = function ics2json(req, res)
 		});
 	}
 };
+
+exports.ics2json = function ics2json(req, res)
+{
+	var corsFn = cors(corsOptions);
+	corsFn(req, res, function()
+	{
+		ics2json_function(req, res);
+	});
+}

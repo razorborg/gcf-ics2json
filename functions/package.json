@@ -1,11 +1,17 @@
 {
-  "name":"gcf-ics2json",
-  "author":"Jan Martin Borgersen",
-  "version":"1.0.0",
-  "description":"Google Cloud Function for returning iCal events as JSON",
-  "keywords":["ical","ics","cloud","function"],
-  "license":"MIT",
+  "name": "gcf-ics2json",
+  "author": "Jan Martin Borgersen",
+  "version": "1.0.0",
+  "description": "Google Cloud Function for returning iCal events as JSON",
+  "keywords": [
+    "ical",
+    "ics",
+    "cloud",
+    "function"
+  ],
+  "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.4",
     "ical": "^0.5.0"
   }
 }
